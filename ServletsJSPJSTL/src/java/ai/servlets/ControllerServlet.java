@@ -27,7 +27,15 @@ public class ControllerServlet extends HttpServlet {
         ColorBean myBean = new ColorBean();
         myBean.setForegroundColor(request.getParameter("foreColor"));
         myBean.setBackgroundColor(request.getParameter("backColor"));
-        
+        System.out.println(request.getParameter("border"));
+       if("on".equals(request.getParameter("border"))) 
+       {
+            myBean.setBorder("border");
+        }
+        else
+        {
+            myBean.setBorder("");
+        } 
         request.setAttribute("bean", myBean);
         ServletContext ctx = this.getServletContext();
         RequestDispatcher dispatcher

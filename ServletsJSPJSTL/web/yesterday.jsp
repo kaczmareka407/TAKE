@@ -13,7 +13,7 @@
             body {
                 background: ${bean.backgroundColor};
                 color: ${bean.foregroundColor};
-                border: ${bean.border:}
+                
             }
         </style>
     </head>
@@ -38,12 +38,14 @@
             Released: <c:out value="${releaseDate}" />
 </p>
 <c:if test="${!empty members}">
-    <table border>
+    
+    <table ${bean.border}>
         <tr><th>The Beatles</th></tr>
         <c:forEach var="member" items="${members}">
             <tr><td>${member}</td></tr>
         </c:forEach>
     </table>
+
 </c:if>
 
 <a href="yesterday.html">powrót</a>
