@@ -7,9 +7,7 @@ import lab.bookings.repositories.BookingRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 //import javax.enterprise.inject.Model;
 import javax.validation.Valid;
@@ -17,49 +15,58 @@ import java.time.LocalDate;
 import java.util.List;
 
 
+@Controller
+@RequestMapping("/bookings")
+public class BookingController {
+    private BookingRepository bookingRepository;
+    private ApartmentRepository apartmentRepository;
 
-    @Controller
-    @RequestMapping("/bookings")
-    public class BookingController {
-        private BookingRepository bookingRepository;
-        private ApartmentRepository apartmentRepository;
-        public BookingController(BookingRepository bookingRepository,
-                                 ApartmentRepository apartmentRepository) {
-            this.bookingRepository = bookingRepository;
-            this.apartmentRepository = apartmentRepository;
-        }
-        @GetMapping
-        public String getAll(Model model) {
-            model.addAttribute(new Booking());
-            model.addAttribute("bookings", bookingRepository.findAll());
-            return "bookings";
-        }
-        @PostMapping
-        public String create(@Valid Booking booking, Errors errors,
-                             Model model) {
-            String view;
-            if (errors.hasErrors()) {
+    public BookingController(BookingRepository bookingRepository,
+                             ApartmentRepository apartmentRepository) {
+        this.bookingRepository = bookingRepository;
+        this.apartmentRepository = apartmentRepository;
+    }
+
+    @GetMapping
+    public String getAll(Model model) {
+        model.addAttribute(new Booking());
+        model.addAttribute("bookings", bookingRepository.findAll());
+        return "bookings";
+    }
+
+    @PostMapping
+    public String create(@Valid Booking booking, Errors errors,
+                         Model model) {
+        String view;
+        if (errors.hasErrors()) {
+            model.addAttribute("bookings",
+                    bookingRepository.findAll());
+            view = "bookings";
+        } else {
+            int numGuests = booking.getNumGuests();
+            LocalDate startDay = booking.getFromDate();
+            LocalDate endDay = booking.getToDate();
+            List<Apartment> availableApartments =
+                    apartmentRepository.getFreeApartments(numGuests, startDay, endDay);
+            if (availableApartments.size() > 0) {
+                booking.setApartment(availableApartments.get(0));
+                bookingRepository.save(booking);
+                view = "redirect:/bookings";
+            } else {
+                model.addAttribute("noApartmentAvailable", true);
                 model.addAttribute("bookings",
                         bookingRepository.findAll());
                 view = "bookings";
-            } else {
-                int numGuests = booking.getNumGuests();
-                LocalDate startDay = booking.getFromDate();
-                LocalDate endDay = booking.getToDate();
-                List<Apartment> availableApartments =
-                        apartmentRepository.getFreeApartments(numGuests, startDay, endDay);
-                if(availableApartments.size() > 0) {
-                    booking.setApartment(availableApartments.get(0));
-                    bookingRepository.save(booking);
-                    view = "redirect:/bookings";
-                } else {
-                    model.addAttribute("noApartmentAvailable", true);
-                    model.addAttribute("bookings",
-                            bookingRepository.findAll());
-                    view = "bookings";
-                }
             }
-            return view;
         }
+        return view;
     }
+
+    @RequestMapping(value = "delete", method = RequestMethod.POST)
+    private String delete(@RequestParam long id){
+        bookingRepository.deleteById(id);
+        return "redirect:/bookings";
+    }
+
+}
 
