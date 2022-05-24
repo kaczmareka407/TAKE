@@ -151,17 +151,28 @@ namespace MvcNews.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, NewsItem newsItem)
         {
-            if (_context.News == null)
-            {
-                return Problem("Entity set 'NewsDbContext.News'  is null.");
-            }
-            
-            if (newsItem != null)
+            try
             {
                 _context.News.Remove(newsItem);
+                await _context.SaveChangesAsync();
             }
-            
-            await _context.SaveChangesAsync();
+            catch (DbUpdateConcurrencyException e)
+            {
+                if (!NewsItemExists(newsItem.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Unable to save changes. The record was modified by another user after you got the original value");
+                   
+                    var entry = e.Entries.Single();
+                    var databaseEntry = entry.GetDatabaseValues();
+                    var databaseEntity = (NewsItem)databaseEntry.ToObject();
+                    ModelState.Remove("RowVersion");
+                    return View(databaseEntity);
+                }
+            }
             return RedirectToAction(nameof(Index));
         }
 
