@@ -4,12 +4,16 @@
  */
 package view.backing;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.html.HtmlCommandButton;
 import javax.faces.component.html.HtmlSelectBooleanCheckbox;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
+import sun.util.resources.Bundles;
 
 /**
  *
@@ -65,9 +69,22 @@ public class LoginBean
         this.password = password;
     }
 
+
+    
     public String login()
     {
-        if (username.equals(password))
+        if ("scott".equals(getUsername()) && ("tiger").equals(getPassword()))
+        {
+
+            FacesContext fc = FacesContext.getCurrentInstance();
+            Locale locale = fc.getViewRoot().getLocale();
+            //FacesContext.getCurrentInstance().getViewRoot().setLocale(new Locale("pl"));
+            fc.addMessage(null, new FacesMessage(ResourceBundle.getBundle("ApplicationMessages", locale).getString("validation.system")));
+            //fc.addMessage(null, new FacesMessage(ResourceBundle.getBundle("ApplicationMessages_pl").getString("validation.system")));
+
+            fc.renderResponse();
+            return "";
+        } else if (username.equals(password))
         {
             return "success";
         } else

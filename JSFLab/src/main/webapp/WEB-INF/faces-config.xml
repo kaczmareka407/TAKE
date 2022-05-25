@@ -25,13 +25,14 @@
               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_3.xsd">
 
     <application>
-        <resource-bundle>
-            <base-name>ApplicationMessages</base-name>
-            <var>AppMessages</var>
-        </resource-bundle>
+
         <locale-config>
             <default-locale>en</default-locale>
             <supported-locale>pl</supported-locale>
         </locale-config>
+        <resource-bundle>
+            <base-name>ApplicationMessages</base-name>
+            <var>AppMessages</var>
+        </resource-bundle>
     </application>
 </faces-config>
