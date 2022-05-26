@@ -4,6 +4,10 @@
  */
 package entities;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import java.io.Serializable;
 import java.time.LocalDate;
 import javax.persistence.Entity;
@@ -26,11 +30,19 @@ public class Complaint implements Serializable
 {
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public String toString()
+    {
+        return "Complaint{" + "id=" + id + ", complaintDate=" + complaintDate + ", complaintText=" + complaintText + ", author=" + author + ", status=" + status + "}\n";
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @NotNull
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate complaintDate;
     @NotNull
     @Size(min = 1, max = 60)
@@ -42,7 +54,10 @@ public class Complaint implements Serializable
     @Size(min = 1, max = 6) 
     private String status;
     
-	
+    
+    
+         
+    
     public Long getId()
     {
         return id;
@@ -77,11 +92,12 @@ public class Complaint implements Serializable
         return true;
     }
 
-    @Override
-    public String toString()
-    {
-        return "entities.Complaint[ id=" + id + " ]";
-    }
+//    @Override
+//    public String toString()
+//    {
+//        //return "entities.Complaint[ id=" + id + " ]";
+//        return "entities.Complaint[id="+id+" ]";    
+//    }
 
     /**
      * @return the complaintDate

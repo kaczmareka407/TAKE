@@ -6,6 +6,7 @@ package app;
 
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
+import org.glassfish.jersey.client.ClientConfig;
 
 /**
  *
@@ -14,16 +15,5 @@ import javax.ws.rs.core.*;
 public class main
 {
 
-    void main()
-    {
-        Client client = ClientBuilder.newClient();
-        String count
-                = client.target("http://localhost:8080/Complaints/"
-                        + "resources/complaints/count")
-                        .request(MediaType.TEXT_PLAIN)
-                        .get(String.class);
 
-        System.out.println("Count: " + count);
-        client.close();
-    }
 }
